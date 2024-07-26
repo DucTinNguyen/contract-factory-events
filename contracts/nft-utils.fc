@@ -1,0 +1,31 @@
+const int one_ton = 1000000000;
+const int deploy_fee = 50000000;
+
+int get_deploy_fee(){
+    return deploy_fee;
+}
+
+slice number_to_json_filename(int number) inline {
+    builder text_b = begin_cell();
+    if number < 0 {
+        text_b = text_b.store_slice("-");
+        number = - number;
+    }
+    int len = 0;
+    int value = 0;
+    int mult = 1;
+    do {
+        (number, int res) = number.divmod(10);
+        value = value + (res + 48) * mult;
+        mult = mult * 256;
+        len = len + 1;
+    } until (number == 0);
+    slice text = text_b.store_uint(value, len * 8)
+    .store_uint(46, 8) ;; ASCII for '.'
+    .store_uint(106, 8) ;; ASCII for 'j'
+    .store_uint(115, 8) ;; ASCII for 's'
+    .store_uint(111, 8) ;; ASCII for 'o'
+    .store_uint(110, 8);; ASCII for 'n'
+    .end_cell().begin_parse();
+    return text;
+}
